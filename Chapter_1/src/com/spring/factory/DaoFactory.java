@@ -1,9 +1,11 @@
-package com.spring.util;
+package com.spring.factory;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.spring.domain.UserDao;
+import com.spring.util.ConnectionMaker;
+import com.spring.util.SimpleConnectionMaker;
 
 @Configuration
 public class DaoFactory {
