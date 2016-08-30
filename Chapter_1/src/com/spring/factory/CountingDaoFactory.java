@@ -13,12 +13,12 @@ import com.spring.util.SimpleConnectionMaker;
 public class CountingDaoFactory {
 	
 	
-	@Bean
-	public UserDao userDao()
-	{
-		return new UserDao(connectionMaker());
-	}
-	
+//	@Bean
+//	public UserDao userDao()
+//	{
+//		return new UserDao(connectionMaker());
+//	}
+//	
 	@Bean
 	public ConnectionMaker connectionMaker(){
 		

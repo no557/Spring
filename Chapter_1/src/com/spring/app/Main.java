@@ -25,7 +25,7 @@ public class Main {
 		
 		User user = new User();
 		
-		user.setId("root0");
+		user.setId("root10");
 		user.setName("shyun");
 		user.setPassword("root");
 		

@@ -10,20 +10,20 @@ import com.spring.util.SimpleConnectionMaker;
 @Configuration
 public class DaoFactory {
 
-	@Bean
-	public UserDao userDao() {
-
-		return new UserDao(connectionMaker());
-	}
-
-	public UserDao accountDao() {
-
-		return new UserDao(connectionMaker());
-	}
-	public UserDao messageDao() {
-
-		return new UserDao(connectionMaker());
-	}
+//	@Bean
+//	public UserDao userDao() {
+//
+//		return new UserDao(connectionMaker());
+//	}
+//
+//	public UserDao accountDao() {
+//
+//		return new UserDao(connectionMaker());
+//	}
+//	public UserDao messageDao() {
+//
+//		return new UserDao(connectionMaker());
+//	}
 
 	@Bean
 	public ConnectionMaker connectionMaker() {
