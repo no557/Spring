@@ -4,13 +4,15 @@ import java.sql.SQLException;
 
 import com.spring.domain.User;
 import com.spring.domain.UserDao;
+import com.spring.util.DaoFactory;
+import com.spring.util.SimpleConnectionMaker;
 
 public class Main {
 	
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
 		
-		UserDao dao = new UserDao();
+		UserDao dao = new DaoFactory().userDao();
 		
 		User user = new User();
 		

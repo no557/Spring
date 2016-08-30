@@ -13,9 +13,9 @@ public class UserDao {
 
 	private ConnectionMaker connectionMaker;
 	
-	public UserDao(){
+	public UserDao(ConnectionMaker connectionMaker){
 		
-		connectionMaker = new SimpleConnectionMaker();
+		this.connectionMaker = connectionMaker;
 		
 	}
 
