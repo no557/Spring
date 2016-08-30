@@ -3,12 +3,11 @@ package com.spring.app;
 import java.sql.SQLException;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 import com.spring.domain.User;
 import com.spring.domain.UserDao;
-import com.spring.factory.CountingDaoFactory;
-import com.spring.factory.DaoFactory;
 import com.spring.util.CountingConnectionMaker;
 
 public class Main {
@@ -19,13 +18,14 @@ public class Main {
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
 		
 		
-		context = new AnnotationConfigApplicationContext(CountingDaoFactory.class);
+//		context = new AnnotationConfigApplicationContext(CountingDaoFactory.class);
+		context = new GenericXmlApplicationContext("applicationContext.xml");
 		
 		UserDao dao = context.getBean("userDao",UserDao.class);
 		
 		User user = new User();
 		
-		user.setId("root4");
+		user.setId("root0");
 		user.setName("shyun");
 		user.setPassword("root");
 		
@@ -37,9 +37,9 @@ public class Main {
 
 		System.out.println(user2.getId() + "get success ");
 		
-		CountingConnectionMaker ccm = context.getBean("connectionMaker",CountingConnectionMaker.class);
-		
-		System.out.println("connection Counter : " + ccm.getCounter());
+//		CountingConnectionMaker ccm = context.getBean("connectionMaker",CountingConnectionMaker.class);
+//		
+//		System.out.println("connection Counter : " + ccm.getCounter());
 		
 	
 	}
