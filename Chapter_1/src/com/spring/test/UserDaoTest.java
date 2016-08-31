@@ -23,8 +23,7 @@ import com.spring.domain.User;
 import com.spring.domain.UserDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/applicationContext.xml")
-@DirtiesContext
+@ContextConfiguration(locations="/test-applicationContext.xml")
 public class UserDaoTest {
 
 	@Autowired
@@ -40,9 +39,6 @@ public class UserDaoTest {
 	@Before
 	public void setUp()
 	{
-		DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql//localhost/testdb","root","root",true);
-		
-		dao.setDataSource(dataSource);
 		
 		System.out.println(this.context);
 		System.out.println(this);
