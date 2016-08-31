@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -21,6 +22,11 @@ public class UserDao {
 
 		this.connectionMaker = connectionMaker;
 
+	}
+	
+	public void setDataSource(DataSource dataSource)
+	{
+		this.connectionMaker = dataSource;
 	}
 
 	public void add(User user) throws ClassNotFoundException, SQLException {
