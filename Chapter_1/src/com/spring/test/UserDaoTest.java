@@ -3,9 +3,8 @@ package com.spring.test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
 import java.sql.SQLException;
-
-import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,8 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -91,6 +88,28 @@ public class UserDaoTest {
 		
 		dao.add(new User("3", "3", "3"));
 		assertThat(dao.getCount(), is(3));
+	}
+
+	@Test
+	public void getAll() throws ClassNotFoundException,SQLException
+	{
+		User user = new User("root","shyun","root");
+		User user2 = new User("root2","shyun","root2");
+		User user3 = new User("root3","shyun","root3");
+		
+		dao.add(user);
+		dao.add(user2);
+		dao.add(user3);
+
+
+		List<User> list = dao.getAll();
+		assertThat(list.size(), is(3));
+		
+		dao.deleteAll();
+		
+		 list = dao.getAll();
+		assertThat(list.size(), is(0));
+		
 	}
 
 

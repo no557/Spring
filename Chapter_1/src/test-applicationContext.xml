@@ -8,7 +8,6 @@
 
 	<bean id="userDao" class="com.spring.domain.UserDao">
 		<constructor-arg ref="dataSource" />
-		<constructor-arg ref="jdbcContext" />
 	</bean>
 
 
