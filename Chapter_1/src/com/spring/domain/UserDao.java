@@ -11,6 +11,7 @@ import javax.xml.crypto.Data;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.spring.factory.StatementStrategy;
 import com.spring.util.ConnectionMaker;
 import com.spring.util.SimpleConnectionMaker;
 
@@ -32,22 +33,18 @@ public class UserDao {
 		this.connectionMaker = dataSource;
 	}
 
-	public void add(User user) throws ClassNotFoundException, SQLException {
-
+	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
 		try {
 
 			c = connectionMaker.getConnection();
-			ps = c.prepareStatement("insert into users(id,name,password) values(?,?,?)");
-			ps.setString(1, user.getId());
-			ps.setString(2, user.getName());
-			ps.setString(3, user.getPassword());
-
+			ps = stmt.makePreparedStatement(c);
+			
 			ps.executeUpdate();
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw e;
 		} finally {
-
 			if (ps != null) {
 				try {
 					ps.close();
@@ -64,7 +61,28 @@ public class UserDao {
 					// TODO: handle exception
 				}
 			}
+
 		}
+
+	}
+
+	public void add(User user) throws ClassNotFoundException, SQLException {
+
+		StatementStrategy stmt = new StatementStrategy() {
+
+			@Override
+			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+				// TODO Auto-generated method stub
+				ps = c.prepareStatement("insert into users(id,name,password) values(?,?,?)");
+				ps.setString(1, user.getId());
+				ps.setString(2, user.getName());
+				ps.setString(3, user.getPassword());
+
+				return ps;
+			}
+		};
+
+		jdbcContextWithStatementStrategy(stmt);
 
 	}
 
@@ -98,33 +116,21 @@ public class UserDao {
 	}
 
 	public void deleteAll() throws SQLException {
-		try {
 
-			c = connectionMaker.getConnection();
-			ps = c.prepareStatement("delete from users");
-			ps.executeUpdate();
+		StatementStrategy stmt = new StatementStrategy() {
 
-		} catch (Exception e) {
-			throw e;
+			@Override
+			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+				// TODO Auto-generated method stub
 
-		} finally {
-
-			if (ps != null) {
-				try {
-					ps.close();
-				} catch (Exception e2) {
-					// TODO: handle exception
-				}
+				c = connectionMaker.getConnection();
+				ps = c.prepareStatement("delete from users");
+			
+				return ps;
 			}
+		};
 
-			if (c != null) {
-				try {
-					c.close();
-				} catch (Exception e2) {
-					// TODO: handle exception
-				}
-			}
-		}
+		jdbcContextWithStatementStrategy(stmt);
 	}
 
 	public int getCount() throws SQLException {
