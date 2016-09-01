@@ -18,84 +18,155 @@ public class UserDao {
 
 	private DataSource connectionMaker;
 
+	Connection c;
+	PreparedStatement ps;
+	ResultSet rs;
+
 	public UserDao(DataSource connectionMaker) {
 
 		this.connectionMaker = connectionMaker;
 
 	}
-	
-	public void setDataSource(DataSource dataSource)
-	{
+
+	public void setDataSource(DataSource dataSource) {
 		this.connectionMaker = dataSource;
 	}
 
 	public void add(User user) throws ClassNotFoundException, SQLException {
 
-		Connection c = connectionMaker.getConnection();
+		try {
 
-		PreparedStatement ps = c.prepareStatement("insert into users(id,name,password) values(?,?,?)");
-		ps.setString(1, user.getId());
-		ps.setString(2, user.getName());
-		ps.setString(3, user.getPassword());
+			c = connectionMaker.getConnection();
+			ps = c.prepareStatement("insert into users(id,name,password) values(?,?,?)");
+			ps.setString(1, user.getId());
+			ps.setString(2, user.getName());
+			ps.setString(3, user.getPassword());
 
-		ps.executeUpdate();
+			ps.executeUpdate();
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw e;
+		} finally {
 
-		ps.close();
-		c.close();
+			if (ps != null) {
+				try {
+					ps.close();
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+			if (c != null) {
+				try {
+					c.close();
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		}
 
 	}
 
 	public User get(String id) throws ClassNotFoundException, SQLException {
 
-		Connection c = connectionMaker.getConnection();
+		try {
+			c = connectionMaker.getConnection();
+			ps = c.prepareStatement("select * from users where id=?");
+			ps.setString(1, id);
+			rs = ps.executeQuery();
 
-		PreparedStatement ps = c.prepareStatement("select * from users where id=?");
-		ps.setString(1, id);
+			User user = null;
+			if (rs.next()) {
 
-		ResultSet rs = ps.executeQuery();
+				user = new User();
+				user.setId(rs.getString("id"));
+				user.setName(rs.getString("name"));
+				user.setPassword(rs.getString("password"));
 
-		User user = null;
-		if (rs.next()) {
+			}
+			return user;
 
-			user = new User();
-			user.setId(rs.getString("id"));
-			user.setName(rs.getString("name"));
-			user.setPassword(rs.getString("password"));
-
-		}
-		
-		ps.close();
-		c.close();
-
-		if(user ==  null)
+		} catch (Exception e) {
+			// TODO: handle exception
 			throw new EmptyResultDataAccessException(1);
+		} finally {
+			ps.close();
+			c.close();
+		}
 
-		return user;
 	}
 
 	public void deleteAll() throws SQLException {
-		Connection c = connectionMaker.getConnection();
+		try {
 
-		PreparedStatement ps = c.prepareStatement("delete from users");
+			c = connectionMaker.getConnection();
+			ps = c.prepareStatement("delete from users");
+			ps.executeUpdate();
 
-		ps.executeUpdate();
+		} catch (Exception e) {
+			throw e;
 
-		ps.close();
-		c.close();
+		} finally {
+
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+
+			if (c != null) {
+				try {
+					c.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+		}
 	}
 
 	public int getCount() throws SQLException {
-		Connection c = connectionMaker.getConnection();
 
-		PreparedStatement ps = c.prepareStatement("select count(*) from users");
+		try {
 
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		int count = rs.getInt(1);
+			c = connectionMaker.getConnection();
+			ps = c.prepareStatement("select count(*) from users");
+			rs = ps.executeQuery();
+			rs.next();
+			int count = rs.getInt(1);
 
-		ps.close();
-		c.close();
+			return count;
 
-		return count;
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw e;
+		} finally {
+
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+
+			if (c != null) {
+				try {
+					c.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+
+		}
 	}
 }
