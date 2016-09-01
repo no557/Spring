@@ -8,6 +8,7 @@
 	
 	<bean id="userDao" class="com.spring.domain.UserDao">
 		<constructor-arg ref="dataSource"/>
+		<constructor-arg ref="jdbcContext"/>
 	</bean>
 
 
@@ -17,5 +18,7 @@
 		<property name="username" value="root"/>	
 		<property name="password" value="root"/>	
 	</bean>
+	
+	<bean id="jdbcContext" class="com.spring.domain.JdbcContext"></bean>
 
 </beans>

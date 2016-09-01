@@ -17,52 +17,17 @@ import com.spring.util.SimpleConnectionMaker;
 
 public class UserDao {
 
-	private DataSource connectionMaker;
+	private DataSource  dataSource;
+	private JdbcContext jdbcContext;
 
 	Connection c;
 	PreparedStatement ps;
 	ResultSet rs;
 
-	public UserDao(DataSource connectionMaker) {
+	public UserDao(DataSource connectionMaker,JdbcContext jdbcContext) {
 
-		this.connectionMaker = connectionMaker;
-
-	}
-
-	public void setDataSource(DataSource dataSource) {
-		this.connectionMaker = dataSource;
-	}
-
-	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-		try {
-
-			c = connectionMaker.getConnection();
-			ps = stmt.makePreparedStatement(c);
-			
-			ps.executeUpdate();
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			throw e;
-		} finally {
-			if (ps != null) {
-				try {
-					ps.close();
-
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-			}
-			if (c != null) {
-				try {
-					c.close();
-
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-			}
-
-		}
+		this.dataSource = connectionMaker;
+		this.jdbcContext = jdbcContext;
 
 	}
 
@@ -82,14 +47,14 @@ public class UserDao {
 			}
 		};
 
-		jdbcContextWithStatementStrategy(stmt);
+		jdbcContext.workWithStatementStrategy(stmt);
 
 	}
 
 	public User get(String id) throws ClassNotFoundException, SQLException {
 
 		try {
-			c = connectionMaker.getConnection();
+			c = dataSource.getConnection();
 			ps = c.prepareStatement("select * from users where id=?");
 			ps.setString(1, id);
 			rs = ps.executeQuery();
@@ -123,21 +88,21 @@ public class UserDao {
 			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
 				// TODO Auto-generated method stub
 
-				c = connectionMaker.getConnection();
+				c = dataSource.getConnection();
 				ps = c.prepareStatement("delete from users");
 			
 				return ps;
 			}
 		};
 
-		jdbcContextWithStatementStrategy(stmt);
+		jdbcContext.workWithStatementStrategy(stmt);
 	}
 
 	public int getCount() throws SQLException {
 
 		try {
 
-			c = connectionMaker.getConnection();
+			c = dataSource.getConnection();
 			ps = c.prepareStatement("select count(*) from users");
 			rs = ps.executeQuery();
 			rs.next();

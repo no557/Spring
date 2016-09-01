@@ -4,18 +4,26 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-	<bean id="connectionMaker" class="com.spring.util.SimpleConnectionMaker"/>
-	
+	<bean id="connectionMaker" class="com.spring.util.SimpleConnectionMaker" />
+
 	<bean id="userDao" class="com.spring.domain.UserDao">
-		<constructor-arg ref="dataSource"/>
+		<constructor-arg ref="dataSource" />
+		<constructor-arg ref="jdbcContext" />
 	</bean>
 
 
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-		<property name="driverClass" value="com.mysql.jdbc.Driver"/>	
-		<property name="url" value="jdbc:mysql://localhost/testdb"/>	
-		<property name="username" value="root"/>	
-		<property name="password" value="root"/>	
+
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost/testdb" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+
+	<bean id="jdbcContext" class="com.spring.domain.JdbcContext">
+		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 
 </beans>
