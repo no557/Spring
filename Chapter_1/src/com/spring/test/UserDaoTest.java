@@ -19,13 +19,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.spring.domain.User;
 import com.spring.domain.UserDao;
+import com.spring.util.Level;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/test-applicationContext.xml")
 public class UserDaoTest {
 
-	@Autowired
-	private ApplicationContext context;
+	
+	private User user1,user2,user3;
+
 	@Autowired
 	private UserDao dao;
 	
@@ -37,33 +39,22 @@ public class UserDaoTest {
 	@Before
 	public void setUp()
 	{
-		
-		System.out.println(this.context);
-		System.out.println(this);
+		user1 = new User("1", "1", "1",Level.BASIC,1,0);
+		user2 = new User("2", "2", "2",Level.SILVER,1,0);
+		user3 = new User("3", "3", "3",Level.GOLD,1,0);
+
 	}
 
 	@Test
 	public void addAndGet() throws SQLException, ClassNotFoundException
 	{
-		
 		dao.deleteAll();
-		
 
-		User user = new User("root","shyun","root");
-		User user2 = new User("root2","shyun","root2");
-
-		dao.add(user);
+		dao.add(user1);
 		dao.add(user2);
 		
-		assertThat(dao.getCount(),is(2));
-		
-		User userGet1 = dao.get("root");
-		assertThat(userGet1.getName(), is(user.getName()));
-		assertThat(userGet1.getPassword(), is(user.getPassword()));
-		
-		User userGet2 = dao.get("root");
-		assertThat(userGet2.getName(), is(user.getName()));
-		assertThat(userGet2.getPassword(), is(user.getPassword()));
+		checkSameUser(user1, dao.get(user1.getId()));
+		checkSameUser(user2, dao.get(user2.getId()));
 		
 	}
 	
@@ -81,24 +72,22 @@ public class UserDaoTest {
 		dao.deleteAll();
 		assertThat(dao.getCount(), is(0));
 		
-		dao.add(new User("1", "1", "1"));
+		dao.add(user1);
 		assertThat(dao.getCount(), is(1));
 		
-		dao.add(new User("2", "2", "2"));
+		dao.add(user2);
 		assertThat(dao.getCount(), is(2));
 		
-		dao.add(new User("3", "3", "3"));
+		dao.add(user3);
 		assertThat(dao.getCount(), is(3));
 	}
 
 	@Test
 	public void getAll() throws ClassNotFoundException,SQLException
 	{
-		User user = new User("root","shyun","root");
-		User user2 = new User("root2","shyun","root2");
-		User user3 = new User("root3","shyun","root3");
-		
-		dao.add(user);
+		dao.deleteAll();
+
+		dao.add(user1);
 		dao.add(user2);
 		dao.add(user3);
 
@@ -117,10 +106,32 @@ public class UserDaoTest {
 	public void duplicateKey()
 	{
 		dao.deleteAll();
-		User user = new User("root","shyun","root");
-		dao.add(user);
-		dao.add(user);
+		dao.add(user1);
+		dao.add(user1);
+	}
+	
+	@Test
+	public void update()
+	{
+		dao.deleteAll();
+		dao.add(user1);
+		
+		user1.setName("jisu");
+		
+		dao.update(user1);
+		
+		checkSameUser(user1, dao.get(user1.getId()));
+		
 	}
 
+	public void checkSameUser(User user1,User user2)
+	{
+		assertThat(user1.getId(), is(user2.getId()));
+		assertThat(user1.getName(), is(user2.getName()));
+		assertThat(user1.getPassword(), is(user2.getPassword()));
+		assertThat(user1.getLevel(), is(user2.getLevel()));
+		assertThat(user1.getLogin(), is(user2.getLogin()));
+		assertThat(user1.getRecommend(), is(user2.getRecommend()));
+	}
 
 }

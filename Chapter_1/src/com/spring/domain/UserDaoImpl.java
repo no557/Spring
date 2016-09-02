@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.spring.exception.DuplicateUserIdException;
+import com.spring.util.Level;
 
 public class UserDaoImpl implements UserDao{
 
@@ -32,14 +33,17 @@ public class UserDaoImpl implements UserDao{
 			user.setId(rs.getString("id"));
 			user.setName(rs.getString("name"));
 			user.setPassword(rs.getString("password"));
+			user.setLevel(Level.valueOf(rs.getInt("level")));
+			user.setLogin(rs.getInt("login"));
+			user.setRecommend(rs.getInt("recommend"));
 			return user;
 		}
 	};
 
 	public void add(User user)   {
 
-		jdbcTemplate.update("insert into users(id,name,password) values(?,?,?)", user.getId(), user.getName(),
-				user.getPassword());
+		jdbcTemplate.update("insert into users(id,name,password,level,login,recommend) values(?,?,?,?,?,?)", user.getId(), user.getName(),
+				user.getPassword(),user.getLevel().intValue(),user.getLogin(),user.getRecommend());
 
 	}
 
@@ -62,5 +66,14 @@ public class UserDaoImpl implements UserDao{
 	public List<User> getAll() {
 
 		return jdbcTemplate.query("select * from users order by id", userMapper);
+	}
+
+	@Override
+	public void update(User user) {
+		// TODO Auto-generated method stub
+
+		jdbcTemplate.update("update users set name=?,password=?,level=?,login=?,recommend=? where id=?",user.getName(),
+				user.getPassword(),user.getLevel().intValue(),user.getLogin(),user.getRecommend(),user.getId());
+		
 	}
 }

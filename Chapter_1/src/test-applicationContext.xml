@@ -11,6 +11,10 @@
 	</bean>
 
 
+	<bean id="userService" class="com.spring.service.UserService">
+		<property name="userDao" ref="userDao"/>	
+	</bean>
+
 
 
 	<bean id="dataSource"
