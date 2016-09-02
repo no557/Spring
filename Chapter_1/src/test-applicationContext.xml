@@ -6,7 +6,7 @@
 
 	<bean id="connectionMaker" class="com.spring.util.SimpleConnectionMaker" />
 
-	<bean id="userDao" class="com.spring.domain.UserDao">
+	<bean id="userDao" class="com.spring.domain.UserDaoImpl">
 		<constructor-arg ref="dataSource" />
 	</bean>
 

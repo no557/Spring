@@ -3,7 +3,7 @@ package com.spring.factory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.spring.domain.UserDao;
+import com.spring.domain.UserDaoImpl;
 import com.spring.util.ConnectionMaker;
 import com.spring.util.CountingConnectionMaker;
 import com.spring.util.SimpleConnectionMaker;

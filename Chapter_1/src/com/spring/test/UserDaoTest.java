@@ -3,8 +3,8 @@ package com.spring.test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.List;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +12,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -110,6 +111,15 @@ public class UserDaoTest {
 		 list = dao.getAll();
 		assertThat(list.size(), is(0));
 		
+	}
+	
+	@Test(expected=DuplicateKeyException.class)
+	public void duplicateKey()
+	{
+		dao.deleteAll();
+		User user = new User("root","shyun","root");
+		dao.add(user);
+		dao.add(user);
 	}
 
 
