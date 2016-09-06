@@ -7,6 +7,9 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.spring.domain.User;
@@ -17,6 +20,7 @@ public class UserService {
 
 	private UserDao userDao;
 	private DataSource dataSource;
+	private PlatformTransactionManager txManager;
 	
 
 	public void setUserDao(UserDao userDao) {
@@ -28,12 +32,14 @@ public class UserService {
 		this.dataSource = dataSource;
 	}
 
+	public void setTxManager(PlatformTransactionManager txManager) {
+		this.txManager = txManager;
+	}
+
 	//트렌젝션이 필요한 부분 
 	public void upgradeLevels() throws SQLException {
-		TransactionSynchronizationManager.initSynchronization();
 		
-		Connection c = DataSourceUtils.getConnection(dataSource);
-		c.setAutoCommit(false);
+		TransactionStatus status = this.txManager.getTransaction(new DefaultTransactionDefinition());
 		try {
 			
 		List<User> users = userDao.getAll();
@@ -44,20 +50,14 @@ public class UserService {
 			}
 		}//end for 
 		
-		c.commit();
+		this.txManager.commit(status);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			
-			c.rollback();
+			this.txManager.rollback(status);
 			throw e ;
 
-		}finally {
-			
-			DataSourceUtils.releaseConnection(c, dataSource);
-			TransactionSynchronizationManager.unbindResource(this.dataSource);
-			TransactionSynchronizationManager.clearSynchronization();
-			
 		}
 	}
 	

@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.spring.domain.User;
 import com.spring.domain.UserDao;
@@ -33,6 +34,9 @@ public class UserServiceTest {
 	
 	@Autowired
 	UserDao dao;
+	
+	@Autowired
+	PlatformTransactionManager txManager;
 	
 	
 	private User user1,user2,user3;
@@ -88,6 +92,7 @@ public class UserServiceTest {
 		UserService testUserService = new TestUserService(user2.getId());
 		testUserService.setUserDao(this.dao);
 		testUserService.setDataSource(this.dataSource);
+		testUserService.setTxManager(this.txManager);
 		dao.deleteAll();
 		
 		dao.add(user1);
