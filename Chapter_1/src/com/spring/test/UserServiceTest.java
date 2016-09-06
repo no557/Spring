@@ -3,6 +3,11 @@ package com.spring.test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +27,9 @@ public class UserServiceTest {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	DataSource dataSource;
 	
 	@Autowired
 	UserDao dao;
@@ -45,7 +53,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void upgradeLevels(){
+	public void upgradeLevels() throws SQLException{
 		
 		dao.deleteAll();
 		
@@ -74,11 +82,53 @@ public class UserServiceTest {
 		
 	}
 	
+	@Test
+	public void upgradeAllOrNothing() throws SQLException{
+		
+		UserService testUserService = new TestUserService(user2.getId());
+		testUserService.setUserDao(this.dao);
+		testUserService.setDataSource(this.dataSource);
+		dao.deleteAll();
+		
+		dao.add(user1);
+		dao.add(user2);
+		dao.add(user3);
+		
+		try {
+			testUserService.upgradeLevels();
+			fail("TestUserServiceException expected");
+			
+		} catch (TestException e) {
+			// TODO: handle exception
+		}
+		
+		checkLevel(dao.get(user1.getId()), Level.BASIC);
+		
+	}
+	
 	private void checkLevel(User user, Level expectedLevel){
 
 		User userUpdate = dao.get(user.getId());
 		assertThat(userUpdate.getLevel(), is(expectedLevel));
 		
 	}
+	
+	static class TestUserService extends UserService{
+		private String id;
+		private TestUserService(String id){
+			this.id = id;
+		}
+		
+		protected void upgradeLevel(User user){
+			
+			System.out.println(user.getId() + "  " + this.id);
+			if(user.getId().equals(this.id))throw new TestException();
+
+			super.upgradeLevel(user);
+		}
+		
+	}
+
+	static class TestException extends RuntimeException{}
 
 }
