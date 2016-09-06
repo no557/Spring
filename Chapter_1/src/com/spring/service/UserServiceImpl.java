@@ -21,6 +21,10 @@ public class UserServiceImpl implements UserService {
 		this.userDao = userDao;
 	}
 
+	public void setMailSender(MailSender mailSender){
+		this.mailSender = mailSender;
+	}
+	
 	// 트렌젝션이 필요한 부분
 	public void upgradeLevels() {
 

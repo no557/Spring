@@ -4,8 +4,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -13,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,6 +25,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.spring.domain.User;
 import com.spring.domain.UserDao;
 import com.spring.service.UserService;
+import com.spring.service.UserServiceImpl;
 import com.spring.util.Level;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -28,6 +34,9 @@ public class UserServiceTest {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	UserServiceImpl userServiceImpl;
 	
 	@Autowired
 	DataSource dataSource;
@@ -40,6 +49,7 @@ public class UserServiceTest {
 	
 	
 	private User user1,user2,user3;
+	private List<User> users;
 
 	@Before
 	public void setUp()
@@ -47,6 +57,15 @@ public class UserServiceTest {
 		user1 = new User("1", "1", "1",Level.BASIC,60,0,"gmail");
 		user2 = new User("2", "2", "2",Level.SILVER,70,40,"hotmail");
 		user3 = new User("3", "3", "3",Level.GOLD,100,20,"naver");
+
+		
+		users =new ArrayList<User>(){
+			{
+				add(user1);
+				add(user2);
+				add(user3);
+			}
+		};
 
 	}
 	
@@ -59,16 +78,20 @@ public class UserServiceTest {
 	@Test
 	public void upgradeLevels() throws SQLException{
 		
-		dao.deleteAll();
+		UserServiceImpl userServiceImpl = new UserServiceImpl();
 		
-		dao.add(user1);
-		dao.add(user2);
-		dao.add(user3);
+		UserDao mockUserDao =  mock(UserDao.class);
 		
-		userService.upgradeLevels();
-		checkLevel(user1, Level.SILVER);
-		checkLevel(user2, Level.GOLD);
-		checkLevel(user3, Level.GOLD);
+		when(mockUserDao.getAll()).thenReturn(this.users);
+		
+		MailSender mockMailSender = mock(MailSender.class);
+		
+		userServiceImpl.setUserDao(mockUserDao);
+		userServiceImpl.setMailSender(mockMailSender);
+		
+		userServiceImpl.upgradeLevels();
+		
+	
 	}
 	
 	@Test
@@ -89,10 +112,8 @@ public class UserServiceTest {
 	@Test
 	public void upgradeAllOrNothing() throws SQLException{
 		
-		UserService testUserService = new TestUserService(user2.getId());
+		UserServiceImpl testUserService = new TestUserService(user2.getId());
 		testUserService.setUserDao(this.dao);
-		testUserService.setDataSource(this.dataSource);
-		testUserService.setTxManager(this.txManager);
 		dao.deleteAll();
 		
 		dao.add(user1);
@@ -118,7 +139,7 @@ public class UserServiceTest {
 		
 	}
 	
-	static class TestUserService extends UserService{
+	static class TestUserService extends UserServiceImpl{
 		private String id;
 		private TestUserService(String id){
 			this.id = id;
