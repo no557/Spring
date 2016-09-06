@@ -36,14 +36,15 @@ public class UserDaoImpl implements UserDao{
 			user.setLevel(Level.valueOf(rs.getInt("level")));
 			user.setLogin(rs.getInt("login"));
 			user.setRecommend(rs.getInt("recommend"));
+			user.setEmail(rs.getString("email"));
 			return user;
 		}
 	};
 
 	public void add(User user)   {
 
-		jdbcTemplate.update("insert into users(id,name,password,level,login,recommend) values(?,?,?,?,?,?)", user.getId(), user.getName(),
-				user.getPassword(),user.getLevel().intValue(),user.getLogin(),user.getRecommend());
+		jdbcTemplate.update("insert into users(id,name,password,level,login,recommend,email) values(?,?,?,?,?,?,?)", user.getId(), user.getName(),
+				user.getPassword(),user.getLevel().intValue(),user.getLogin(),user.getRecommend(),user.getEmail());
 
 	}
 
@@ -72,8 +73,8 @@ public class UserDaoImpl implements UserDao{
 	public void update(User user) {
 		// TODO Auto-generated method stub
 
-		jdbcTemplate.update("update users set name=?,password=?,level=?,login=?,recommend=? where id=?",user.getName(),
-				user.getPassword(),user.getLevel().intValue(),user.getLogin(),user.getRecommend(),user.getId());
+		jdbcTemplate.update("update users set name=?,password=?,level=?,login=?,recommend=? ,email=? where id=?",user.getName(),
+				user.getPassword(),user.getLevel().intValue(),user.getLogin(),user.getRecommend(),user.getEmail(),user.getId());
 		
 	}
 }

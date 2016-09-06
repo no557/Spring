@@ -13,12 +13,14 @@ public class User {
 	int login;
 	int recommend;
 	
+	String email;
+	
 	public User()
 	{
 		
 	}
 	
-	public User(String id,String name,String password,Level level,int login, int recommend)
+	public User(String id,String name,String password,Level level,int login, int recommend,String email)
 	{
 		this.id = id;
 		this.name = name;
@@ -26,6 +28,7 @@ public class User {
 		this.level = level;
 		this.login = login;
 		this.recommend = recommend;
+		this.email = email;
 		
 	}
 	public String getId() {
@@ -71,6 +74,16 @@ public class User {
 		this.recommend = recommend;
 	}
 	
+	
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public void upgradeLevel(){
 		Level nextLevel = this.level.nextLevel();
 		if(nextLevel == null){
