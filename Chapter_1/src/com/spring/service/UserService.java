@@ -26,9 +26,8 @@ public class UserService {
 	private UserDao userDao;
 	private DataSource dataSource;
 	private PlatformTransactionManager txManager;
-    private MailSender mailSender;
-    
-    
+	private MailSender mailSender;
+
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -46,15 +45,8 @@ public class UserService {
 
 		TransactionStatus status = this.txManager.getTransaction(new DefaultTransactionDefinition());
 		try {
-
-			List<User> users = userDao.getAll();
-
-			for (User user : users) {
-				if (canUpgradeLevel(user)) {
-					upgradeLevel(user);
-				}
-			} // end for
-
+			
+			upgradeLevelsInternal();
 			this.txManager.commit(status);
 
 		} catch (Exception e) {
@@ -64,6 +56,18 @@ public class UserService {
 			throw e;
 
 		}
+	}
+
+	private void upgradeLevelsInternal() {
+
+		List<User> users = userDao.getAll();
+
+		for (User user : users) {
+			if (canUpgradeLevel(user)) {
+				upgradeLevel(user);
+			}
+		} // end for
+
 	}
 
 	public void add(User user) {
@@ -96,8 +100,7 @@ public class UserService {
 	}
 
 	private void sendUpgradeEMail(User user) {
-		
-		
+
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(user.getEmail());
 		message.setFrom("n87929@gmail.com");
