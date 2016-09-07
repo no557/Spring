@@ -10,12 +10,6 @@
 		<constructor-arg ref="dataSource" />
 	</bean>
 
-	<bean id="userService" class="com.spring.service.UserServiceTx">
-		<property name="userService" ref="userServiceImpl"></property>
-		<property name="transactionManager" ref="transactionManager"></property>
-	</bean>
-
-
 	<bean id="userServiceImpl" class="com.spring.service.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
 		<property name="mailSender" ref="mailSender" />

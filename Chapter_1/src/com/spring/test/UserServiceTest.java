@@ -4,9 +4,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.spring.domain.User;
 import com.spring.domain.UserDao;
+import com.spring.service.TransactionHandler;
 import com.spring.service.UserService;
 import com.spring.service.UserServiceImpl;
 import com.spring.util.Level;
@@ -45,7 +48,7 @@ public class UserServiceTest {
 	UserDao dao;
 	
 	@Autowired
-	PlatformTransactionManager txManager;
+	PlatformTransactionManager transactionManager;
 	
 	
 	private User user1,user2,user3;
@@ -120,8 +123,18 @@ public class UserServiceTest {
 		dao.add(user2);
 		dao.add(user3);
 		
+		
+		TransactionHandler txHandler = new TransactionHandler();
+		txHandler.setTarget(testUserService);
+		txHandler.setTransactionManager(transactionManager);
+		txHandler.setPattern("upgradeLevels");
+	
+		UserService txUserService = (UserService)Proxy.newProxyInstance(getClass().getClassLoader(),
+				new Class[] {UserService.class}, txHandler);
+		
 		try {
-			testUserService.upgradeLevels();
+			
+			txUserService.upgradeLevels();
 			fail("TestUserServiceException expected");
 			
 		} catch (TestException e) {
