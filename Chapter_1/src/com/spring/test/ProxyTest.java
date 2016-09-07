@@ -13,6 +13,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
+import org.springframework.aop.support.Pointcuts;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
@@ -61,13 +64,30 @@ public class ProxyTest {
 		assertThat(proxiedHello.sayThankYou("jisu"),is("THANK YOU JISU"));
 	}
 	
+	@Test
+	public void pointCutAdvisor()
+	{
+		ProxyFactoryBean pfBean = new ProxyFactoryBean();
+		pfBean.setTarget(new HelloTarget());
+		
+		NameMatchMethodPointcut pointCut = new NameMatchMethodPointcut();
+		pointCut.setMappedName("sayH*");
+		
+		pfBean.addAdvisor(new DefaultPointcutAdvisor(pointCut, new UpperCaseAdivce()));
+		
+		Hello proxiedHello  =(Hello)pfBean.getObject();
+
+		assertThat(proxiedHello.sayHello("jisu"),is("HELLO JISU"));
+		assertThat(proxiedHello.sayHi("jisu"),is("HI JISU"));
+		assertThat(proxiedHello.sayThankYou("jisu"),is("THANK YOU JISU"));
+	}
+	
 	static class UpperCaseAdivce implements org.aopalliance.intercept.MethodInterceptor
 	{
 
 		@Override
 		public Object invoke(MethodInvocation arg0) throws Throwable {
 			// TODO Auto-generated method stub
-			
 			String ret = (String)arg0.proceed();
 			return ret.toUpperCase();
 		}
