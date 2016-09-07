@@ -5,11 +5,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.isNotNull;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
+import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
 
 import com.spring.proxy.Hello;
 import com.spring.proxy.HelloTarget;
@@ -40,5 +45,34 @@ public class ProxyTest {
 		assertThat(proxiedHello.sayHi("jisu"),is("HI JISU"));
 		assertThat(proxiedHello.sayThankYou("jisu"),is("THANK YOU JISU"));
 	}
+	
+	
+	@Test
+	public void proxyFactoryBean()
+	{
+		ProxyFactoryBean pfBean = new ProxyFactoryBean();
+		pfBean.setTarget(new HelloTarget());
+		pfBean.addAdvice(new UpperCaseAdivce());
+		
+		Hello proxiedHello = (Hello) pfBean.getObject();
+		
+		assertThat(proxiedHello.sayHello("jisu"),is("HELLO JISU"));
+		assertThat(proxiedHello.sayHi("jisu"),is("HI JISU"));
+		assertThat(proxiedHello.sayThankYou("jisu"),is("THANK YOU JISU"));
+	}
+	
+	static class UpperCaseAdivce implements org.aopalliance.intercept.MethodInterceptor
+	{
+
+		@Override
+		public Object invoke(MethodInvocation arg0) throws Throwable {
+			// TODO Auto-generated method stub
+			
+			String ret = (String)arg0.proceed();
+			return ret.toUpperCase();
+		}
+		
+	}
+	
 
 }
